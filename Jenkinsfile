@@ -13,7 +13,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/saraswathi1806/BMI_Project.git',
+                    url: 'https://github.com/saraswathi1806/BMI_project.git',
                     credentialsId: 'github-creds'
             }
         }
