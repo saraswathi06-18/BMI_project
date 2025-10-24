@@ -2,44 +2,47 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        IMAGE_NAME = "saraswathi06/bmi"
+        DOCKERHUB_REPO = 'saraswathi1806/bmi-app'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Checkout SCM') {
             steps {
-                git branch: 'main',
-                url: 'https://github.com/saraswathi06-18/BMI_project.git',
-                credentialsId: 'github-creds'
+                git(
+                    url: 'https://github.com/saraswathi06-18/BMI_project.git',
+                    branch: 'main',
+                    credentialsId: 'github-creds'
+                )
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat "docker build -t %IMAGE_NAME% ."
+                bat "docker build -t ${DOCKERHUB_REPO} ."
             }
         }
 
         stage('Login to DockerHub') {
             steps {
-                bat "docker login -u %DOCKERHUB_CREDENTIALS_USR% -p %DOCKERHUB_CREDENTIALS_PSW%"
+                withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    bat 'docker login -u %USERNAME% -p %PASSWORD%'
+                }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                bat "docker push %IMAGE_NAME%"
+                bat "docker push ${DOCKERHUB_REPO}"
             }
         }
     }
 
     post {
         success {
-            echo "✅ Pipeline executed successfully!"
+            echo "Docker image pushed successfully!"
         }
         failure {
-            echo "❌ Pipeline failed. Check errors above."
+            echo "Pipeline failed. Check errors above."
         }
     }
 }
