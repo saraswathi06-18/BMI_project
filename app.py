@@ -1,35 +1,28 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# GET route to test if app is running
 @app.route('/')
 def home():
-    return "BMI App is running! Use POST /bmi to calculate BMI."
+    return '''
+        <h2>BMI Calculator</h2>
+        <form method="POST" action="/bmi">
+            Weight (kg): <input type="number" step="0.1" name="weight" required><br><br>
+            Height (m): <input type="number" step="0.01" name="height" required><br><br>
+            <input type="submit" value="Calculate BMI">
+        </form>
+    '''
 
-# POST route to calculate BMI
 @app.route('/bmi', methods=['POST'])
-def calculate_bmi():
-    try:
-        data = request.get_json()
-        weight = float(data['weight'])   # in kg
-        height = float(data['height'])   # in meters
-
-        bmi = weight / (height ** 2)
-
-        if bmi < 18.5:
-            status = 'Underweight'
-        elif bmi < 24.9:
-            status = 'Normal'
-        elif bmi < 29.9:
-            status = 'Overweight'
-        else:
-            status = 'Obese'
-
-        return jsonify({'bmi': round(bmi, 2), 'status': status})
+def bmi():
+    weight = float(request.form['weight'])
+    height = float(request.form['height'])
+    bmi_value = weight / (height ** 2)
     
-    except Exception as e:
-        return jsonify({'error': 'Invalid input', 'message': str(e)}), 400
+    return f'''
+        <h2>Your BMI is: {bmi_value:.2f}</h2>
+        <a href="/">Calculate Again</a>
+    '''
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
