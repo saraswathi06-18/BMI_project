@@ -33,6 +33,16 @@ pipeline {
                 bat "docker push %DOCKER_IMAGE%:latest"
             }
         }
+
+        stage('Run Docker Container') {
+            steps {
+                bat """
+                docker stop bmi-app || echo Container not running
+                docker rm bmi-app || echo Container not removed
+                docker run -d -p 5000:5000 --name bmi-app %DOCKER_IMAGE%:latest
+                """
+            }
+        }
     }
 
     post {
