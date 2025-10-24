@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "saraswathi1806/bmi-app"
+        KUBECONFIG_PATH = "C:\\Users\\22251\\.kube\\config"
     }
 
     stages {
@@ -36,8 +37,11 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                bat "kubectl apply -f k8s-deployment.yaml"
-                bat "kubectl apply -f k8s-service.yaml"
+                withEnv(["KUBECONFIG=${env.KUBECONFIG_PATH}"]) {
+                    // Use full path to YAML files in Jenkins workspace
+                    bat "kubectl apply -f %WORKSPACE%\\k8s-deployment.yaml"
+                    bat "kubectl apply -f %WORKSPACE%\\k8s-service.yaml"
+                }
             }
         }
     }
@@ -48,4 +52,3 @@ pipeline {
         }
     }
 }
-
