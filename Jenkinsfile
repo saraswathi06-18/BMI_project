@@ -43,6 +43,13 @@ pipeline {
                 """
             }
         }
+
+        // ✅ Final Deployment Stage
+        stage('Deployment Complete') {
+            steps {
+                echo "✅ Application is deployed and running at http://<your-server-ip>:5000"
+            }
+        }
     }
 
     post {
