@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bmi-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bmi-app
+  template:
+    metadata:
+      labels:
+        app: bmi-app
+    spec:
+      containers:
+      - name: bmi-app-container
+        image: saraswathi1806/bmi-app:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_ENV
+          value: "development"
